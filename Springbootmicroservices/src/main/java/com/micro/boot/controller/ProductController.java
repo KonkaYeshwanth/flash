@@ -1,5 +1,7 @@
 package com.micro.boot.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -9,16 +11,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.micro.boot.model.Product;
+import com.micro.boot.model.User;
 import com.micro.boot.pojo.ResponsePojo;
 import com.micro.boot.service.ProductServiceImpl;
+import com.micro.boot.service.UserServiceImpl;
 
 @Controller
-@RequestMapping(path="/rest")
+@RequestMapping(path = "/rest")
 public class ProductController {
 
 	@Autowired
 	private ProductServiceImpl productServiceImpl;
-	
+
 	@ResponseBody
 	@PostMapping(path = "/addDevice", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponsePojo addDevice(@RequestBody Product product) {
@@ -32,4 +36,5 @@ public class ProductController {
 		return response;
 
 	}
+
 }
