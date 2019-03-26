@@ -1,9 +1,14 @@
 package com.micro.boot.controller;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +32,7 @@ public class UserController {
 
 	@PostMapping(path = "/adduser")
 	@ResponseBody
-	public ResponseEntity<Object> addUser(@RequestBody User user) {
+	public ResponseEntity<Object> addUser(@Valid @RequestBody User user) {
 		User u = userServiceImpl.addUser(user);
 //		ResponsePojo response=new ResponsePojo();
 //		if(u.getName() !=null) {
@@ -35,6 +40,8 @@ public class UserController {
 //		}
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{name}").buildAndExpand(u.getName())
 				.toUri();
+		
+		
 
 		return ResponseEntity.created(location).build();
 
@@ -48,12 +55,16 @@ public class UserController {
 
 	@GetMapping(path = "/finduser/{name}")
 	@ResponseBody
-	public User findUserByName(@PathVariable String name) {
+	public Resource<User> findUserByName(@PathVariable String name) {
 		User user=userServiceImpl.findUser(name);
 		if(user == null) {
 			throw new UserNotFoundException("User not existed");
 		}
-		return user ;
+		//#Hateoas
+		Resource<User> resource=new Resource<User>(user);
+		ControllerLinkBuilder link=linkTo(methodOn(this.getClass()).getUsers());
+		resource.add(link.withRel("list-users"));
+		return resource ;
 
 	}
 }
